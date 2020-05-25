@@ -1,0 +1,439 @@
+<?
+
+Vue.js
+	一套用于构建用户界面的渐进式框架。
+
+===
+环境：Windows 7 旗舰版 + node.js v10.13.0 + Sublime Text3 编辑器
+===
+
+网址：cn.vuejs.org
+文档：http://doc.vue-js.com/v2/guide/installation.html
+
+兼容性：
+	Vue 不支持 IE8 及以下版本，因为 Vue 使用了 IE8 无法模拟的 ECMAScript 5 特性
+	
+【笔记包含如下】
+	一、CDN 引入 Vue.js
+		vue_sty.html
+	二、Vue 脚手架 - CLI【此文件】
+		vue_sty-cli.html
+	三、Vue 脚手架 - CLI 3.0
+		vue_sty-cli3.0.html
+
+【脚手架 cli:自动编译】
+			
+二、Vue 脚手架 - CLI
+	
+	脚手架是通过webpack搭建的开发环境
+	使用ES6语法
+	打包和压缩JS为一个文件
+	项目文件在环境中编译，而不是浏览器
+	实现页面自动刷新
+
+	1、搭建脚手架 - CLI
+
+		a、node.js安装 http://nodejs.cn/download/
+		b、cmd 输入
+			node -v，输出当前node的版本
+			npm -v，输出当前npm的版本
+			#注 node在6.9以上，npm版本在3.10以上
+
+			#openssl config failed: error:02001003:system library:fopen:No such process
+			#重装系统 解决
+
+		c、(cmd)安装脚手架CLI【需要一段时间】
+			#项目初始化
+			   c1 .全局安装vue-cli
+			             (c)npm install -g  vue-cli
+			             # 测试 vue -v，输出vue版本
+			   c2.[当前目录下]创建一个基于 webpack 模板的新项目
+			             vue init webpack projectName
+			   c3.进入项目目录
+			              cd projectName
+			   c4.安装依赖
+			              npm install
+			   c5.启动项目
+			              npm run dev
+
+	2、介绍src文件流程及根组件App
+
+		//index.html -> main.js -> App.vue
+
+		简单实现
+			//===app.vue【根组件】
+			<!-- 1模板：html结构 -->
+			<template>
+			  <div id="app">
+			    {{title}}
+			  </div>
+			</template>
+
+			<!-- 2行为：处理逻辑 -->
+			<script>
+			import HelloWorld from './components/HelloWorld'
+
+			export default {
+			  name: 'App',
+			  data(){
+			    return{
+			      title:"这是我的第一个Vue脚手架项目！"
+			    }
+			  }
+			}
+			</script>
+
+			<!-- 3样式：解决样式 -->
+			<style>
+
+			</style>
+
+			//===HelloWorld.vue【自己的组件】
+			<template>
+			  <div class="hello">
+			   
+			  </div>
+			</template>
+
+			<script>
+			export default {
+			  name: 'HelloWorld',
+			  data () {
+			    return {
+			       
+			    }
+			  }
+			}
+			</script>
+
+			<!-- Add "scoped" attribute to limit CSS to this component only -->
+			<style scoped>
+
+			</style>
+
+			//===main.js
+			import Vue from 'vue'
+			import App from './App'
+			import Users from './components/Users'
+
+			Vue.config.productionTip = false
+
+			//全局注册组件
+			Vue.component("users",Users);
+
+			/* eslint-disable no-new */
+			new Vue({
+			  el: '#app',
+			  components: { App },
+			  //对应app.vue 的组件名 name: 'App',
+			  template: '<App/>'
+			})
+
+		#说明：
+			index.html -> main.js -> App.vue
+			各个文件跟CDN引入差不多；只是由：
+				div + script + css
+			变成：
+				template + script + style 即【模板 + 行为 + 样式】
+
+	3、组件嵌套
+
+		components文件夹下建文件User.vue
+
+		//全局 对应文件<script>内：
+		main.js 引入import Users from './components/Users'
+				//全局注册组件
+				Vue.component("users",Users);
+
+		//局部 对应文件<script>内：
+		App.vue 引入 import Users from './components/Users'
+				export default {
+					//注册组件
+					components:{
+						"users":Users
+					}
+				}
+
+		使用：App.vue 的<template>内
+			<users></users>
+
+	4、组件CSS作用域【src1】
+
+		scoped
+
+		使用：<style scoped></style>
+		作用：保证样式不会乱，只会在自己的作用域使用
+
+	5、实战 Demo （组件嵌套）【src2】
+
+		Header / Footer / 样式设置  自适应
+
+	6、属性传值Props 
+
+		父组件 向 子组件 传值
+		子组件 向 父组件 传值
+
+		a、父组件 向 子组件 传值
+
+			App.vue 里的 <users v-bind:appusers="users"></users> 获得 App.vue里的 users
+				Users.vue 里使用 props:appusers 获得数据
+				使用：v-for="user in appusers"
+
+			#注意：appusers 之前写的是 app-users ，未能成功渲染
+
+			最好：
+				props:{
+				  	appusers:{
+				  		//类型
+				  		type:Array,
+				  		//是否规格
+				  		required:true
+				  	}
+				  },
+
+		b、子组件 向 父组件 传值
+
+			见 8
+
+	7、传值和传引用【src3】
+
+		利用到props
+
+		传值：string number boolean		#互不影响
+		引用：array object				#添加、删除数据时，影响其他位置数据变化
+	
+	8、事件传值（子 to 父）
+
+		//===Header.vue
+		//事件：titleChange； 内容：子 向 父组件传值
+    	this.$emit("titleChange","子 向 父组件传值");
+
+    	//===App.vue
+    	<app-header v-on:titleChange="updateTitle($event)" v-bind:title="title"></app-header>
+    	//方法实现
+    	methods:{
+		    updateTitle(titleC){
+		      this.title = titleC
+		    }
+		  },
+
+		 // Header.vue里面的点击事件包含 $emit ---> App.vue里面的 v-on:titleChange监听 自身的 updateTitle($event)事件 ---> App.vue里面的updateTitle改变title的值 ---> App.vue里面的v-bind:title监听title改变 ---> 渲染到app-header模板(通过Header.vue的props)
+
+	9、生命周期（钩子函数）
+
+		//===main.js
+		new Vue({
+		  // el: '#app',
+		  components: { App },
+		  //对应app.vue 的组件名 name: 'App',
+		  template: '<App/>'
+		}).$mount(el)
+
+		#生命周期=找错误，解决需求
+		beforeCreate:function(){
+			alert("组件实例化之前执行的函数");
+		},
+		created:function(){
+			alert("组件实例化完毕，但页面还未显示");
+		},
+		beforeMount:function(){
+			alert("组件挂载前，页面仍未展示，但虚拟Dom已经配置");
+		},
+		mounted:function(){
+			alert("组件挂载后，此方法执行后，页面显示");
+		},
+		beforeUpdate:function(){
+			alert("组件更新前，页面仍未更新，但虚拟Dom已经配置");
+		},
+		updated:function(){
+			alert("组件更新，此方法执行后，页面显示");
+		},
+		beforeDestory:function(){
+			alert("组件销毁前");
+		},
+		destoryed:function(){
+		    alert("组件销毁");
+		}
+
+	10、路由 和 Http【src4】
+
+		#路由
+		安装 路由模块
+			npm install vue-router --save-dev
+
+		main.js 引入 import VueRouter from 'vue-router'
+			紧接着使用路由：Vue.use(VueRouter)
+			配置路由：const router = new VueRouter({
+				routes:[
+					{path:"/",component:Home},
+					{path:"/helloworld",component:HelloWorld},
+				],
+				//去掉 # 号
+				mode:"history"
+			})
+			//new Vue({})里面使用router
+			new Vue({
+				router,
+			})
+
+			展示：App.vue里面写 <router-view></router-view>
+
+			<a>标签会刷新页面
+			<router-link>标签提高效率，不刷新页面
+
+		#Http
+		安装 
+			npm install vue-resource --save-dev
+
+		main.js 引入 import VueResource from 'vue-resource'
+			紧接着使用路由：Vue.use(VueResource)
+
+			#模仿后台传数据的 网站http://jsonplaceholder.typicode.com/
+			#Resources  使用：http://jsonplaceholder.typicode.com/users
+
+			请求&赋值：
+			this.$http.get("http://jsonplaceholder.typicode.com/users").then((data)=>{
+		  		// console.log(data)
+		  		this.users = data.body
+		  	})
+
+
+	11、课程小结及引导
+
+		CDN
+		vue-cli
+
+		#实现业务逻辑
+		Vue深入浅出(从入门到开发)：https://study.163.com/course/introduction.htm?courseId=1004461012#/courseDetail?tab=1
+		Vue实战项目(在线翻译)：https://study.163.com/course/introduction/1004463009.htm
+		
+		#付费课程 米斯特吴
+
+	12、实现跨域请求(fetch/axios/proxytable)【src5 主要代码】
+
+		===
+			# cross-domind
+			### 跨域请求
+			### 跨域借口地址：http://www.thenewstep.cn/test/testToken.php
+			### 参数：username，password
+			### token:f4902c9ae5a2a9d8f84868ad064e706
+			### 请求类型：post
+			###请求头：Content-type:application/json
+
+		a、fetch
+
+		//===App.vue
+		export default{
+			name: 'App',
+			created(){
+				// fetch
+				fetch("http://www.thenewstep.cn/test/testToken.php",{
+					method:"post",
+					body:"hello"
+				})
+				.then(result => {
+					console.log(result)
+				})
+
+				//axios
+			}
+		}
+
+		#===网上搜：vue proxytable
+		//复制：
+			proxyList: {
+		        '/apis': {
+		            // 测试环境
+		            target: 'https://goods.footer.com',  // 接口域名
+		            changeOrigin: true,  //是否跨域
+		            pathRewrite: {
+		                '^/apis': ''   //需要rewrite重写的,
+		            }              
+		        }
+		  }
+		//放到 config文件夹 > index.js 内的：
+			proxyTable:{},
+		//修改后如下：
+			proxyTable: {
+				'/apis': {
+					// 测试环境
+					target: 'http://www.thenewstep.cn/',  // 接口域名
+					changeOrigin: true,  //是否跨域
+					pathRewrite: {
+						'^/apis': ''   //需要rewrite重写的,
+					}              
+				}
+			}
+		//===App.vue 里面的 fetch 改为：
+			// fetch
+				fetch("/apis/test/testToken.php",{
+					method:"post",
+					body:"hello"
+				})
+			# /apis 代表 http://www.thenewstep.cn/
+
+		# (若已启动则)重启： npm run dev
+
+		//=== App.vue 进行 json 解析数据：
+			.then(result => {
+				// console.log(result)
+				return result.json()
+			})
+			.then(data => {
+				console.log(data)
+				// 返回请求不合法
+			})
+
+		# 处理请求不合法
+			// App.vue
+				// fetch
+				fetch("/apis/test/testToken.php",{
+					method:"post",
+					// 随便写的：username:"henry",password:"123123"
+					body:JSON.stringify({username:"henry",password:"123123"})
+				})
+			# 提示 msg:"token错误！"
+
+		# 处理 msg:"token错误！"，加 header
+			// App.vue
+				// fetch
+				fetch("/apis/test/testToken.php",{
+					method:"post",
+					headers:{
+						"Content-type":"application/json",// 可不写
+						token:"f4902c9ae5a2a9d8f84868ad064e706"
+					},
+					body:JSON.stringify({username:"henry",password:"123123"})
+				})
+			# 提示 msg:"请求成功！"
+
+		b、axios
+
+			#安装 axios :
+				cnpm install axios
+			# 启动 npm run dev
+			# main.js 引入 axios
+				import axios from 'axios'
+				// 设为全局
+				Vue.prototype.$axios = axios
+			# App.vue [跨域问题已经在 fetch 解决了]
+				export default{
+					name: 'App',
+					created(){
+						// fetch
+						
+						//axios
+						this.$axios.post("/apis/test/testToken.php",{username:"hello",password:"123456"})
+						.then(data => {
+							console.log(data)
+						})
+					}
+				}
+			# main.js 设置 header
+				axios.defaults.headers.common['token'] = "f4902c9ae5a2a9d8f84868ad064e706"
+				axios.defaults.headers.post['Content-type'] = "application/json"
+
+三、Vue 脚手架 - CLI 3.0 
+	
+		见 vue_sty-cli3.0.html
+	

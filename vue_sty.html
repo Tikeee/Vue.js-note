@@ -1,0 +1,754 @@
+<?
+
+Vue.js
+	一套用于构建用户界面的渐进式框架。
+
+===
+环境：Windows 7 旗舰版 + node.js v10.13.0 + Sublime Text3 编辑器
+===
+
+网址：cn.vuejs.org
+文档：http://doc.vue-js.com/v2/guide/installation.html
+
+兼容性：
+	Vue 不支持 IE8 及以下版本，因为 Vue 使用了 IE8 无法模拟的 ECMAScript 5 特性
+	
+【笔记包含如下】
+						
+	一、CDN 引入 Vue.js【此文件】【此学习文件为直接引入vue.js，无需脚手架】
+		vue_sty.html
+	二、Vue 脚手架 - CLI
+		vue_sty-cli.html
+	三、Vue 脚手架 - CLI 3.0
+		vue_sty-cli3.0.html
+			
+【直接使用:与普通的html文档无区别】
+
+一、CDN 引入 Vue.js
+
+	1、引入CDN
+
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+		【或下载 vue.js <script src="vue.js"></script>】
+
+	2、新建style.css，引入css
+
+		<link rel="stylesheet" type="text/css" href="style.css">
+
+	3、自己写的代码处理到另外一个文件app.js，引入
+
+		<script src="app.js"></script>
+
+	4、app.js 里面实例化vue对象【因为使用CDN形式；注意大小写】
+
+		new Vue({});
+
+	5、内容
+
+		获取元素：el
+		设置数据：data
+		设置方法：methods
+		方法赋值：function(value)
+		调用自身数据：this.dataname
+
+	6、data-binding：给属性绑定对应的值
+	
+		v-bind:href="website"		#<a v-bind:href="website">闲乐马</a>
+		v-html="websiteTag" 		#<p v-html="websiteTag"></p>
+
+		以上全部代码：
+			//===app.js 实例化vue对象
+			new Vue({
+				el: "#vue-app",
+				data:{
+					name:"Mr Li",
+					job:"学生",
+					website:"http://www.xianlema.com",
+					websiteTag:"<a href='http://www.xianlema.com'>Thenewstep</a>"
+				},
+				methods:{
+					greet:function(time){
+						return 'Good '+time+" "+this.name+"!";
+					}
+				}
+			});
+
+			/*
+			*el：element 需要获取的元素，一定是html中的根容器元素
+			*data：用于数据存储
+			*methods：用于存储各种方法
+			*data-binding：给属性绑定对应的值
+			*/
+
+			//===index.html
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="utf-8">
+				<title>vue.js</title>
+				<link rel="stylesheet" type="text/css" href="style.css">
+				<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+				<script src="vue.js"></script>
+			</head>
+			<body>
+				<!-- vue-app是根容器 -->
+				<div id="vue-app">
+					<h1>{{ greet('Night') }}</h1>
+					<p> {{ name }} </p>
+					<p> {{ job }} </p>
+					<a v-bind:href="website">闲乐马</a>
+					<input type="text" v-bind:value="job">
+					<p v-html="websiteTag"></p>
+				</div>
+				<script src="app.js"></script>
+			</body>
+			</html>
+
+	7、事件
+
+		#详见：https://cn.vuejs.org/v2/guide/events.html
+
+		绑定的事件里的方法可以不用加（），如add() 可以写为add
+		{{add()}} 就必须加（），才能知道是方法
+
+		v-on:click【点击事件】
+			<h1> Events </h1>
+			<button v-on:click="age++">涨一岁</button>
+			<button v-on:click="age--">减一岁</button>
+			<p>My age is {{age}}.</p>
+
+			el: "#vue-app",
+			data:{
+				age:30
+			},
+
+			===或
+			<button v-on:click="add">涨一岁</button>
+			<button v-on:click="subtract">减一岁</button>
+			methods:{
+				add:function(){
+					this.age++;
+				},
+				subtract:function(){
+					this.age--;
+				}
+			}
+		v-on:dblclick【双击事件】
+
+		v-on:click(value)【传参】
+			add:function(inc){this.age+=inc;},
+			
+		v-on:mousemove【鼠标移动事件】
+
+			完整代码：
+			//===app.js
+				//实例化vue对象
+				new Vue({
+					el: "#vue-app",
+					data:{
+						age:30,
+						x:0,
+						y:0
+					},
+					methods:{
+						add:function(inc){
+							this.age+=inc;
+						},
+						subtract:function(sub){
+							this.age-=sub;
+						},
+						updateXY:function(event){
+							// console.log(event)
+							this.x = event.offsetX;
+							this.y = event.offsetY;
+						}
+					}
+				});
+			//===index.html
+				<div id="vue-app">
+					<h1> Events </h1>
+					<button v-on:click="add(10)">涨10岁</button>
+					<button v-on:click="subtract(10)">减10岁</button>
+					<button v-on:dblclick="add(10)">涨10岁</button>
+					<button v-on:dblclick="subtract(10)">减10岁</button>
+					<p>My age is {{age}}.</p>
+
+					<div id="canvas" v-on:mousemove="updateXY">
+						{{x}},{{y}}
+					</div>
+				</div>
+			//===style.css
+				#canvas{
+					width: 400px;
+					padding: 200px 20px;
+					text-align: center;
+					border: 1px solid black;
+				}
+		可以使用@ 代替 v-on:
+			@click
+			@dblclick
+			@click(value)
+			@mousemove
+
+	8、事件修饰符
+
+		#详见：https://cn.vuejs.org/v2/guide/events.html
+
+		鼠标移动停止事件
+			#1	v-on:mousemove="stopMoving"
+			<div id="canvas" v-on:mousemove="updateXY">
+				{{x}},{{y}} - <span v-on:mousemove="stopMoving">Stop Moving</span>
+			</div>
+			stopMoving:function(event){
+				event.stopPropagation();
+			}
+
+			#2	v-on:mousemove.stop=""
+			<span v-on:mousemove.stop="">Stop Moving</span>
+
+		点击停止事件
+			v-on:click.once="add(10)" 	#只能触发点击一次
+		
+		点击不跳转
+			v-on:click.prevent="alert"
+
+			<a v-on:click.prevent="alert" href="http://www.xianlema.com">闲乐马</a>
+			alert:function(){alert("Hello !");}
+			#不加 .prevent 会弹窗，点击 确定/叉掉 后，跳转
+
+	9、键盘事件 & 键值修饰符
+
+		详见：https://cn.vuejs.org/v2/guide/events.html#按键修饰符
+
+		input 监听按键
+			v-on:keyup
+		<input type="text" v-on:keyup="logName">
+
+		input 监听输入 后 按enter执行logName
+			v-on:keyup.enter
+		<input type="text" v-on:keyup.enter="logName">
+
+		input 监听输入 后 按alt+enter执行logName
+			v-on:keyup.alt.enter
+		<input type="text" v-on:keyup.alt.enter="logName">
+
+	10、双向数据绑定
+
+		给 input 标签做标记 ref="name" / ref="age" 
+		调用：this.$refs.name.value
+
+		v-model 双向数据绑定
+			v-model="name" 绑定实例化里的 data里的name属性
+			就不需要this.$refs.name.value了
+
+		//===app.js
+			el: "#vue-app",
+			data:{
+				name:"",
+				age:""
+			},
+			methods:{
+				 logName:function(){
+				 	// console.log("你正在输入名字！");
+				 	this.name = this.$refs.name.value;
+				 },
+				 logAge:function(){
+				 	// console.log("你正在输入年龄！");
+				 	this.age = this.$refs.age.value;
+				 }
+			}
+
+		//===index.html
+			<div id="vue-app">
+				<h1> 双向数据绑定 / input / select / textarea </h1>
+				<label>姓名:</label>
+				<input ref="name" type="text" v-model="name">
+				<span>{{name}}</span>
+				<label>年龄:</label>
+				<input ref="age" type="text" v-on:keyup="logAge">
+				<span>{{age}}</span>
+			</div>
+
+	11、计算属性 computed
+
+		#耗时、大量搜索 时 使用
+		详见：https://cn.vuejs.org/v2/guide/computed.html
+
+		{{addToA()}} 	#methods 里的方法调用【加(),自己测试，不加，提示没有function】
+		{{addToA}} 		#computed 里的方法调用
+
+		#下面的例子methods，addToA()和addToB()都会执行
+		#下面的例子computed，会选择执行
+		#===注意观察console
+
+		代码：
+			//===app.js
+				el: "#vue-app",
+				data:{
+					a:0,
+					b:0,
+					age:20
+				},
+				methods:{
+					// addToA:function(){
+					// 	console.log("Add to A");
+					// 	return this.a + this.age
+					// },
+					// addToB:function(){
+					// 	console.log("Add to B");
+					// 	return this.b + this.age
+					// }
+				},
+				computed:{
+					addToA:function(){
+						console.log("Add to A");
+						return this.a + this.age
+					},
+					addToB:function(){
+						console.log("Add to B");
+						return this.b + this.age
+					}
+				}
+
+			//===index.html
+				<div id="vue-app">
+					<h1> Computed 计算属性 </h1>
+					<button v-on:click="a++">Add to A</button>
+					<button v-on:click="b++">Add to B</button>
+					<p>A - {{a}}</p>
+					<p>B - {{b}}</p>
+					<p>Age + A = {{addToA}}</p>
+					<p>Age + B = {{addToB}}</p>
+				</div>
+
+	12、动态绑定CSS样式
+		
+		v-bind:class="{red:true,blue:true}"
+
+		<h2 v-bind:class="{red:false}">示例 1</h2>
+		#F12 查看源码【带有两个属性】
+		#<h2 class>示例 1</h2>
+
+		<h2 v-bind:class="{red:true,blue:true}">示例 1</h2>
+		#F12 查看源码【带有两个属性】
+		#<h2 class="red blue">示例 1</h2>
+
+		完整代码
+		//===app.js
+		//实例化vue对象
+		new Vue({
+			el: "#vue-app",
+			data:{
+				changeCol:false,
+				changeLen:false,
+			},
+			methods:{
+				 
+			},
+			computed:{
+				 compClasses:function(){
+				 	return{
+				 		changeColor:this.changeCol,
+				 		changeLength:this.changeLen
+				 	}
+				 }
+			}
+		});
+		//===index.html【示例1 会影响示例2】
+		<!-- vue-app是根容器 -->
+		<div id="vue-app">
+			<h1> 动态 CSS Class </h1>
+
+			<h2>示例 1</h2>
+			<!-- <div v-on:click="changeCol = !changeCol" v-bind:class="{changeColor:changeCol}">
+				<span>Tikee</span>
+			</div> -->
+			<h2>示例 2</h2>
+			<button v-on:click="changeCol = !changeCol">Change Color</button>
+			<button v-on:click="changeLen = !changeLen">Change Length</button>
+			<div v-bind:class="compClasses">
+				<span>Tikee</span>
+			</div>
+		</div>
+		//===style.css
+		span{
+			background: red;
+			display: inline-block;
+			padding: 10px;
+			color: #fff;
+			margin: 10px 0;
+		}
+
+		.changeColor span{
+			background: green;
+		}
+
+		.changeLength span:after{
+			content: "length";
+			margin-left: 10px;
+		}
+
+	13、v-if 条件渲染
+
+		#详见：https://cn.vuejs.org/v2/guide/conditional.html
+
+		v-if
+		v-else-if
+		#不显示时，是 <!---->
+
+		v-show
+		#不显示时，是 <p style="display:none;">网络连接错误：404</p>
+
+		完整代码
+		//===index.html
+		<div id="vue-app">
+			<h1> v-if 条件 </h1>
+
+			<button v-on:click="error = !error">Toggle Error[显示或隐藏错误]</button>
+			<button v-on:click="success = !success">Toggle Success</button>
+
+			<!-- <p v-if="error">网络连接错误：404</p>
+			<p v-else-if="success">网络连接成功：200</p> -->
+
+			<p v-show="error">网络连接错误：404</p>
+			<p v-show="success">网络连接成功：200</p>
+		</div>
+		//===app.js
+		data:{
+			error:false,
+			success:false
+		},
+		
+	14、v-for 循环
+
+		完整代码
+		//===app.js
+		data:{
+			characters:["Mario","Luffy","Tikee"],
+			users:[
+				{name:"Henry",age:30},
+				{name:"Bucky",age:20},
+				{name:"Emliy",age:10},
+			]
+		},
+		//===index.html
+		<div id="vue-app">
+			<h1> v-for 循环 </h1>
+
+			<!-- 数组下标 -->
+			<!-- {{characters[0]}}
+			{{characters[1]}}
+			{{characters[2]}} -->
+
+			<!-- 数组遍历 -->
+			<ul>
+				<li v-for="name in characters">{{name}}</li>
+			</ul>
+
+			<ul>
+				<li v-for="user in users">{{user.name}} - {{user.age}}</li>
+			</ul>
+
+			<ul>
+				<li v-for="(user,index) in users">{{index+1}}.{{user.name}} - {{user.age}}</li>
+			</ul><!--index 为序号-->
+
+			<div v-for="(user,index) in users">
+				<h4>{{index}}.{{user.name}}</h4>
+				<p>Age - {{user.age}}</p>
+			</div>
+
+			<!-- 去掉不必要的容器  template不会渲染出来-->
+			<template v-for="(user,index) in users">
+				<h4>{{index}}.{{user.name}}</h4>
+				<p>Age - {{user.age}}</p>
+			</template>
+
+			<template v-for="(user,index) in users">
+				<div v-for="(val,key) in user">
+					<p>{{key}} - {{val}}</p>
+				</div>
+			</template>
+		</div>
+
+	15、实战 Demo
+
+		完整代码
+		//===app.js
+		//实例化vue对象
+		new Vue({
+			el: "#vue-app",
+			data:{
+				health:100,
+				ended:false	
+			},
+			methods:{
+				 punch:function(){
+				 	this.health -= 10;
+
+				 	if(this.health <= 0){
+				 		this.ended = true;
+				 	}
+				 },
+				 restart:function(){
+				 	this.health = 100;
+				 	this.ended = false;
+				 }
+			},
+			computed:{
+
+			}
+		});
+		//===index.html
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="utf-8">
+			<title>vue.js</title>
+			<link rel="stylesheet" type="text/css" href="style.css">
+			<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+			<script src="vue.js"></script>
+		</head>
+		<body>
+			<!-- vue-app是根容器 -->
+			<div id="vue-app">
+				<h1> 实战 Demo </h1>
+				<!-- 图片 -->
+				<div id="bag" v-bind:class="{burst:ended}"></div>
+
+				<!-- 进度情况 -->
+				<div id="bag-health">
+					<div v-bind:style="{width:health+'%'}"></div>
+				</div>
+
+				<div id="controls">
+					<button v-on:click="punch" v-show="!ended">使劲敲</button>
+					<button v-on:click="restart">重新开始</button>
+				</div> 
+			</div>
+			<script src="app.js"></script>
+		</body>
+		</html>
+		//===style.css
+		#bag{
+			width: 200px;
+			height: 300px;
+			margin: 0 auto;
+			background: url(bag1.png) center no-repeat;
+			background-size: 80%;
+		}
+
+		#bag.burst{
+			background-image: url(bag2.png);
+		}
+
+		#bag-health{
+			width: 200px;
+			border: 2px #000 solid;
+			margin: 0 auto 20px auto;
+		}
+
+		#bag-health div{
+			height: 20px;
+			background: crimson;
+		}
+
+		#controls{
+			width: 200px;
+			margin: 0 auto;
+		}
+
+		#controls button{
+			margin-left: 20px;
+		}
+
+	16、初始化多个Vue实例对象
+
+		//===index.html
+		<h1> 初始化多个Vue实例对象 </h1>
+		<div id="vue-app-one">
+			 <h2>{{title}}</h2>
+			 <p>{{greet}}</p>
+		</div>
+
+		<div id="vue-app-two">
+			 <h2>{{title}}</h2>
+			 <p>{{greet}}</p>
+			 <button @click="changeTitle">Change Title One</button>
+		</div>
+		//===app.js
+		//实例化vue对象
+		var one = new Vue({
+			el: "#vue-app-one",
+			data:{
+				title:"app one的内容"
+			},
+			methods:{
+				 
+			},
+			computed:{
+				greet:function(){
+					return "Hello App One";
+				}
+			}
+		});
+
+		//实例化vue对象2
+		var two = new Vue({
+			el: "#vue-app-two",
+			data:{
+				title:"app two的内容"
+			},
+			methods:{
+				 changeTitle:function(){
+				 	one.title = "已经改名了！";
+				 }
+			},
+			computed:{
+				greet:function(){
+					return "Hello App Two";
+				}
+			}
+		});
+
+		two.title = "App Two的title也发生改变了！";
+
+	17、初始Vue组件
+
+		//===index.html
+		<h1> 初始Vue组件 </h1>
+		<div id="vue-app-one">
+			<greeting></greeting>
+		</div>
+
+		<div id="vue-app-two">
+			<greeting></greeting>
+		</div>
+		//===app.js
+		//组件 es6 ``[可换行]【按键在 esc 下面】
+		Vue.component("greeting",{
+			template:`
+			<p>
+				{{name}}:大家好，给大家介绍一下。。。
+				<button @click="changeName">改变名字</button>
+			</p>
+			`,
+			data:function(){
+				return {
+					name:"Tikee"
+				}
+			},
+			methods:{
+				changeName:function(){
+					this.name = "Henry"
+				}
+			}
+		})
+
+		//实例化vue对象
+		new Vue({
+			el: "#vue-app-one",
+		});
+
+		//实例化vue对象2
+		new Vue({
+			el: "#vue-app-two",
+		});
+
+		#===说明：为什么要 data:function(){return {name:"Tikee"}},
+		#===这样点击会两个名字都改变
+
+			//全局变量
+			var data = {
+				name:"Bukcy"
+			}
+
+			//组件 es6 ``[可换行]
+			Vue.component("greeting",{
+				template:`
+				<p>
+					{{name}}:大家好，给大家介绍一下。。。
+					<button @click="changeName">改变名字</button>
+				</p>
+				`,
+				data:function(){
+					return data
+				},
+				methods:{
+					changeName:function(){
+						this.name = "Henry"
+					}
+				}
+			})
+
+			//实例化vue对象
+			new Vue({
+				el: "#vue-app-one",
+			});
+
+			//实例化vue对象2
+			new Vue({
+				el: "#vue-app-two",
+			});
+
+	18、axios.min.js【ajax请求】
+
+		//===index.html
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="utf-8">
+			<title>vue.js</title>
+			<link rel="stylesheet" type="text/css" href="style.css">
+			<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+			<script src="vue.js"></script>
+			<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+			<script src="axios.min.js"></script>
+		</head>
+		<body>
+			<h1> 初始Vue组件 </h1>
+			<div id="vue-app-one">
+				<greeting></greeting>
+			</div>
+			<script src="app.js"></script>
+		</body>
+		</html>
+		
+		//===app.js
+		//组件 es6 ``[可换行]
+		Vue.component("greeting",{
+			template:`
+			<p>
+				{{name}}:大家好，给大家介绍一下。。。
+				<button @click="changeName">点击发送ajax请求</button>
+			</p>
+			`,
+			data:function(){
+				return {
+					name:"Tikee"
+				}
+			},
+			methods:{
+				changeName:function(){
+					axios.post('http://localhost/finance_proj/admin.php/card/todoCardList', {
+						page:1
+					})
+					.then((response)=> {
+						console.log(response);
+						this.name = response.data.msg;
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+				}
+			}
+		})
+
+		//实例化vue对象
+		new Vue({
+			el: "#vue-app-one",
+		});
+
+二、Vue 脚手架 - CLI
+	
+	见 vue_sty-cli.html
