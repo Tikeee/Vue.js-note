@@ -1,5 +1,5 @@
 # Vue.js-note
 A Vue.js Learning Log.
 
-# 建议打开工具
+# 建议打开工具（Windows）
 Sublime Text
